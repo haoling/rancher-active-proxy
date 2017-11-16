@@ -27,10 +27,7 @@ update_certs() {
         else
             acme_server="https://acme-v01.api.letsencrypt.org/directory"
         fi
-        
-        sleep 30
-        echo "Sleep 30s before Using Acme server $acme_server"
-        
+
         debug=""
         [[ $DEBUG == true ]] && debug+=" -v"
 
@@ -50,6 +47,18 @@ update_certs() {
 				sed -i  's|'"$actual_server"'|'"$acme_server"'|g' "/etc/letsencrypt/renewal/$base_domain.conf"
 			fi
 		fi
+
+		if [[ -f "/etc/letsencrypt/live/$base_domain/cert.pem" ]]; then
+			notafter=$(date -D "%b %e %T %Y GMT" -d "`openssl x509 -noout -dates -in /etc/letsencrypt/live/$base_domain/cert.pem | grep notAfter | sed -e "s/notAfter=//"`" "+%s")
+			echo Cetificate for $base_domain is expirely in `date -d "1970.01.01-00:00:$notafter"`
+			if [[ `expr $notafter - \`date +%s\`` -gt 2592000 ]]; then
+				echo Not due to renewal, skip
+			fi
+		fi
+		continue
+
+        echo "Sleep 30s before Using Acme server $acme_server"
+        sleep 30
 	    
 	    # Split domain by ';'  create all config needed and create domain parameter for certbot 
 	    listdomain=${base_domain//;/$'\n'}
