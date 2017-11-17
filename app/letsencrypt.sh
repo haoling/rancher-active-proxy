@@ -53,6 +53,7 @@ update_certs() {
 			echo Cetificate for $base_domain is expirely in `date -d "1970.01.01-00:00:$notafter"`
 			if [[ `expr $notafter - \`date +%s\`` -gt 2592000 ]]; then
 				echo Not due to renewal, skip
+				continue
 			fi
 		fi
 
