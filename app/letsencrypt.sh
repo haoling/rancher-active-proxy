@@ -55,7 +55,6 @@ update_certs() {
 				echo Not due to renewal, skip
 			fi
 		fi
-		continue
 
         echo "Sleep 30s before Using Acme server $acme_server"
         sleep 30
