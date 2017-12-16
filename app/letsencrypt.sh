@@ -51,7 +51,7 @@ update_certs() {
 		if [[ -f "/etc/letsencrypt/live/$base_domain/cert.pem" ]]; then
 			notafter=$(date -D "%b %e %T %Y GMT" -d "`openssl x509 -noout -dates -in /etc/letsencrypt/live/$base_domain/cert.pem | grep notAfter | sed -e "s/notAfter=//"`" "+%s")
 			echo Cetificate for $base_domain is expirely in `date -d "1970.01.01-00:00:$notafter"`
-			if [[ `expr $notafter - \`date +%s\`` -gt 2592000 ]]; then
+			if [[ `expr $notafter - \`date +%s\`` -gt 1296000 ]]; then
 				echo Not due to renewal, skip
 				continue
 			fi
