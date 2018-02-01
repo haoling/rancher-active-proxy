@@ -136,12 +136,12 @@ If needed you can use Rancher-Active-Proxy to listen for different port.
 
 In this case, you can specify on which port Rancher Active Proxy should listen for a specific hostname :
 
-`docker run -d -l rap.host=foo.bar.com -l rap.listen_http_ports="81,8081" -l rap.port="53" containerexposing/port53`
+`docker run -d -l rap.host=foo.bar.com -l rap.http_listen_ports="81,8081" -l rap.port="53" containerexposing/port53`
 
 In this situation Rancher Active Proxy will listen for request matching `rap.host` on both port `81` and `8081` of you host
 and route those request to port `53` of your container.
 
-Likewise, `rap.listen_https_ports` will work for https request.
+Likewise, `rap.https_listen_ports` will work for https request.
 
 If you are not using port `80` and `443` at all you won't be able to use Let's Encrypt Automatic certificates.
 
@@ -305,6 +305,8 @@ You'll need apache2-utils on the machine where you plan to create the htpasswd f
 Or you can use an nginx container to create the file ( using OpenSSL as explained in [Nginx Readme](http://wiki.nginx.org/Faq#How_do_I_generate_an_.htpasswd_file_without_having_Apache_tools_installed.3F) )
 
 `docker run -it nginx printf "Username_to_use:$(openssl passwd -crypt Password_to_use)\n" >> /path/to/htpasswd/{rap.host}`
+
+A default htpasswd can be used to secure all hosts using this proxy. Good for development environments to keep prying eyes out. To use, create the htpasswd file named 'default' here: `/etc/nginx/htpasswd/default`.
 
 ### Custom Nginx Configuration
 
