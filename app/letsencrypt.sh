@@ -55,6 +55,8 @@ update_certs() {
 				echo Not due to renewal, skip
 				continue
 			fi
+		else
+			echo Cetificate for $base_domain is not found.
 		fi
 
         echo "Sleep 30s before Using Acme server $acme_server"
