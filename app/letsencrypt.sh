@@ -35,6 +35,10 @@ update_certs() {
 
         # First domain will be our base domain
         base_domain="${hosts_array_expanded[0]}"
+	    # Split domain by ';'  create all config needed and create domain parameter for certbot 
+	    listdomain=${base_domain//;/$'\n'}
+		domarray=( $listdomain )
+		certname=${domarray[0]}
 		
 		#Check if cert switch from staging to real and vice versa
 		if [[ -f "/etc/letsencrypt/renewal/$base_domain.conf" ]]; then
@@ -48,7 +52,7 @@ update_certs() {
 			fi
 		fi
 
-		if [[ -f "/etc/letsencrypt/live/$base_domain/cert.pem" ]]; then
+		if [[ -f "/etc/letsencrypt/live/$certname/cert.pem" ]]; then
 			notafter=$(date -D "%b %e %T %Y GMT" -d "`openssl x509 -noout -dates -in /etc/letsencrypt/live/$base_domain/cert.pem | grep notAfter | sed -e "s/notAfter=//"`" "+%s")
 			echo Cetificate for $base_domain is expirely in `date -d "1970.01.01-00:00:$notafter"`
 			if [[ `expr $notafter - \`date +%s\`` -gt 1296000 ]]; then
@@ -62,8 +66,6 @@ update_certs() {
         echo "Sleep 30s before Using Acme server $acme_server"
         sleep 30
 	    
-	    # Split domain by ';'  create all config needed and create domain parameter for certbot 
-	    listdomain=${base_domain//;/$'\n'}
 	    for dom in $listdomain; do
         # Add location configuration for the domain
 		add_location_configuration "$dom"
@@ -83,8 +85,6 @@ update_certs() {
 	    
 		echo " "
 		#Setting the cert for all domain it was created for !
-		domarray=( $listdomain )
-		certname=${domarray[0]}
 		for dom in $listdomain; do
 		setup_certs $dom $certname
 		done
